@@ -1,30 +1,33 @@
-# scraper.py
+# src/scraper.py
 
 import requests
 from bs4 import BeautifulSoup
 import csv
 
-# URL to scrape
-url = 'http://example.com'
+def fetch_data():
+    # URL to scrape
+    url = 'http://example.com'
 
-# Fetch the webpage
-response = requests.get(url)
-soup = BeautifulSoup(response.text, 'html.parser')
+    # Fetch the webpage
+    response = requests.get(url)
+    soup = BeautifulSoup(response.text, 'html.parser')
 
-# Print the title of the page
-print(soup.title.text)
+    # Extract the title
+    title = soup.title.text
 
-# Save the title to a CSV file
-with open('data.csv', 'w', newline='') as file:
-    writer = csv.writer(file)
-    writer.writerow(["Title"])
-    writer.writerow([soup.title.text])
+    # Extract additional data
+    additional_data = [data.text for data in soup.find_all('p')]
 
-# Modify scraper.py to scrape additional data
+    return (title, additional_data)
 
-    additional_data = soup.find_all('p')
+def save_to_csv(title, additional_data):
+    with open('data.csv', 'w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(["Title"])
+        writer.writerow([title])
+        for data in additional_data:
+            writer.writerow([data])
 
-    for data in additional_data:
-
-        writer.writerow([data.text])
-
+if __name__ == '__main__':
+    title, additional_data = fetch_data()
+    save_to_csv(title, additional_data)
